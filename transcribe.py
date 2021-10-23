@@ -98,10 +98,12 @@ def on_message(self, msg):
         if data["results"][0]["final"]:
             FINALS.append(data)
             line = data["results"][0]['alternatives'][0]['transcript']
+            metadata = json.dumps(data["results"])
             LAST = None
         else:
             LAST = data
             line = ""
+            
         # This prints out the current fragment that we are working on
         
         # this is to print out just the text (line by line) to a file named 'readme.txt'
@@ -111,9 +113,7 @@ def on_message(self, msg):
         
         # this is to print out the entire js object bruh
         with open('file2.txt', 'a') as f:
-            t = json.dumps("".join([x['results'] for x in FINALS]))
-            print(t)
-            f.write(t)
+            f.write(metadata)
 
 
 def on_error(self, error):
@@ -226,5 +226,3 @@ def main():
     ws.run_forever()
 
 
-if __name__ == "__main__":
-    main()
