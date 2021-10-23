@@ -97,11 +97,23 @@ def on_message(self, msg):
     if "results" in data:
         if data["results"][0]["final"]:
             FINALS.append(data)
+            line = data["results"][0]['alternatives'][0]['transcript']
             LAST = None
         else:
             LAST = data
+            line = ""
         # This prints out the current fragment that we are working on
-        print(data['results'][0]['alternatives'][0]['transcript'])
+        
+        # this is to print out just the text (line by line) to a file named 'readme.txt'
+        print(line)
+        with open('text-linebyline.txt', 'a') as f:
+            f.write(line)
+        
+        # this is to print out the entire js object bruh
+        with open('file2.txt', 'a') as f:
+            t = json.dumps("".join([x['results'] for x in FINALS]))
+            print(t)
+            f.write(t)
 
 
 def on_error(self, error):
@@ -117,6 +129,8 @@ def on_close(ws):
     transcript = "".join([x['results'][0]['alternatives'][0]['transcript']
                           for x in FINALS])
     print(transcript)
+#     with open('readme.txt', 'w') as f:
+#         f.write(transcript)
 
 
 def on_open(ws):
@@ -133,7 +147,7 @@ def on_open(ws):
         # closed by the server.
         "word_confidence": True,
         "timestamps": True,
-        "max_alternatives": 3
+        "max_alternatives": 0
     }
 
     # Send the initial control message which sets expectations for the
@@ -174,6 +188,13 @@ def parse_args():
 
 def main():
     # Connect to websocket interfaces
+    
+    with open('text-linebyline.txt', 'w') as f:
+        f.write('')
+        
+    with open('file2.txt', 'w') as f:
+         f.write('')
+    
     headers = {}
     userpass = ":".join(get_auth())
     headers["Authorization"] = "Basic " + base64.b64encode(
@@ -197,7 +218,6 @@ def main():
     
     
     ws.on_open = on_open
-    print(userpass, url)
     ws.args = parse_args()
     
     # This gives control over the WebSocketApp. This is a blocking
