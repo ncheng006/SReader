@@ -12,6 +12,9 @@ const DifficultyBarChart = (props) => {
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={{ scheme: 'nivo' }}
+
+        isInteractive={true}
+
         defs={[
           {
             id: 'dots',

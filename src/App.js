@@ -1,4 +1,4 @@
-import {  useState } from 'react';
+import {  useEffect, useState } from 'react';
 import './App.css';
 
 import LiveText from './components/LiveText';
@@ -7,12 +7,24 @@ import dummy from './data/dummy.json';
 
 function App() {
 
-  const [speechText, setSpeechText] = useState('hi');
+  const [currentTime, setCurrentTime] = useState(0);
+  const [data, setData] = useState(dummy);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('This will run every second!');
+      fetch('/text').then(res => res.json()).then(data => {
+        setCurrentTime(data.time);
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
 
   return (
     <div className="App">
       <div className="layout">
-        <LiveText width={70} text={speechText} setText={setSpeechText}/>
+        <LiveText width={20} text={currentTime}/>
         <DifficultyBarChart data={dummy}/>
       </div>
     </div>
