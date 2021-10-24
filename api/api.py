@@ -12,44 +12,59 @@ def get_current_text():
 
 
 data1 = {
-    'values': [
-        {
-            "country": "AD",
-            "hot dog": 1,
-            "hot dogColor": "hsl(226, 70%, 50%)"
-        },
-        {
-            "country": "AE",
-            "hot dog": 2,
-            "hot dogColor": "hsl(130, 70%, 50%)"
-        },
-        {
-            "country": "AF",
-            "hot dog": 3,
-            "hot dogColor": "hsl(304, 70%, 50%)"
-        },
-        {
-            "country": "AG",
-            "hot dog": 4,
-            "hot dogColor": "hsl(225, 70%, 50%)"
-        },
-        {
-            "country": "AI",
-            "hot dog": 5,
-            "hot dogColor": "hsl(161, 70%, 50%)"
-        },
-        {
-            "country": "AL",
-            "hot dog": 6,
-            "hot dogColor": "hsl(93, 70%, 50%)"
-        },
-        {
-            "country": "AM",
-            "hot dog": 7,
-            "hot dogColor": "hsl(119, 70%, 50%)"
-        }
+    "id": "norway",
+    "color": "hsl(83, 70%, 50%)",
+    "data": [
+      {
+        "x": "plane",
+        "y": 72
+      },
+      {
+        "x": "helicopter",
+        "y": 280
+      },
+      {
+        "x": "boat",
+        "y": 55
+      },
+      {
+        "x": "train",
+        "y": 140
+      },
+      {
+        "x": "subway",
+        "y": 169
+      },
+      {
+        "x": "bus",
+        "y": 146
+      },
+      {
+        "x": "car",
+        "y": 69
+      },
+      {
+        "x": "moto",
+        "y": 226
+      },
+      {
+        "x": "bicycle",
+        "y": 224
+      },
+      {
+        "x": "horse",
+        "y": 236
+      },
+      {
+        "x": "skateboard",
+        "y": 210
+      },
+      {
+        "x": "others",
+        "y": 263
+      }
     ]
-}
+  }
 
 
 @app.route('/data')
@@ -74,7 +89,7 @@ def read_text_from_audio():
 @app.route('/read_obj_stuff')
 def read_obj_data():
     text = extract('file2.txt')
-
+    
     # text is the list of json objects, work on extracting the timestamps
     # daniel: start here
 
@@ -106,6 +121,36 @@ def get_flesch():
     text = extract()
     score = readability_index.flesch_reading_ease(text)
     return score
+
+metrics = [{
+    "id": "dalechall",
+    "color": "hsl(83, 70%, 50%)",
+    "data": []
+  },{
+    "id": "smogindex",
+    "color": "hsl(335, 70%, 50%)",
+    "data": []
+  },{
+    "id": "gunningease",
+    "color": "hsl(55, 70%, 50%)",
+    "data": []
+  },{
+    "id": "flesch",
+    "color": "hsl(23, 70%, 50%)",
+    "data": []
+  }]
+timestep = 0
+
+@app.route('/all_metrics')
+def get_all_metrics():
+    global metrics
+    global timestep
+    getMetric = [get_dale_chall, get_smog_index, get_gunning_ease, get_flesch]
+    for i in range(len(metrics)):
+        data = metrics[i]['data']
+        data.append({'x': timestep, 'y': getMetric[i]()})
+        metrics[i]['data'] = data
+    timestep += 1
 
 
 def extract(file_path="text-linebyline.txt"):

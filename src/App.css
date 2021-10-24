@@ -55,13 +55,23 @@
   border-radius: 0.5rem;
 }
 
-
-
 .right-column {
   height: 100%;
   flex: 50%;
+  display: flex;
+  flex-direction: column;
 }
 
+.pace-chart {
+  /* flex: 50%; */
+  height: 50%;
+  width: 100%;
+}
+
+.metrics-chart {
+  height: 50%;
+  width: 100%;
+}
 
 .App-logo {
   height: 40vmin;
