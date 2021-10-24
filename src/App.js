@@ -13,8 +13,13 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       console.log('This will run every second!');
+
       fetch('/text').then(res => res.json()).then(data => {
         setCurrentTime(data.time);
+      });
+
+      fetch('/data').then(res => res.json()).then(data => {
+        setData(data.values);
       });
     }, 1000);
     return () => clearInterval(interval);
@@ -25,7 +30,7 @@ function App() {
     <div className="App">
       <div className="layout">
         <LiveText width={20} text={currentTime}/>
-        <DifficultyBarChart data={dummy}/>
+        <DifficultyBarChart data={data}/>
       </div>
     </div>
   );
