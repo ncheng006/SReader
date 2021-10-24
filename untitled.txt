@@ -103,14 +103,14 @@ def on_message(self, msg):
         else:
             LAST = data
             line = ""
-
+            
         # This prints out the current fragment that we are working on
-
+        
         # this is to print out just the text (line by line) to a file named 'readme.txt'
         print(line)
         with open('text-linebyline.txt', 'a') as f:
             f.write(line)
-
+        
         # this is to print out the entire js object bruh
         with open('file2.txt', 'a') as f:
             f.write(metadata)
@@ -131,6 +131,7 @@ def on_close(ws):
     print(transcript)
 #     with open('readme.txt', 'w') as f:
 #         f.write(transcript)
+    return transcript
 
 
 def on_open(ws):
@@ -140,7 +141,7 @@ def on_open(ws):
         "action": "start",
         # this means we get to send it straight raw sampling
         "content-type": "audio/l16;rate=%d" % RATE,
-
+        
         "interim_results": True,
         # "inactivity_timeout": 5, # in order to use this effectively
         # you need other tests to handle what happens if the socket is
@@ -158,7 +159,6 @@ def on_open(ws):
     threading.Thread(target=read_audio,
                      args=(ws, args.timeout)).start()
 
-
 def get_url():
     config = configparser.RawConfigParser()
     config.read('speech.cfg')
@@ -168,8 +168,7 @@ def get_url():
     region = config.get('auth', 'region')
     host = REGION_MAP[region]
     return ("wss://{}/speech-to-text/api/v1/recognize"
-            "?model=en-US_BroadbandModel").format(host)
-
+           "?model=en-US_BroadbandModel").format(host)
 
 def get_auth():
     config = configparser.RawConfigParser()
@@ -184,24 +183,27 @@ def parse_args():
     parser.add_argument('-t', '--timeout', type=int, default=20)
     # parser.add_argument('-d', '--device')
     # parser.add_argument('-v', '--verbose', action='store_true')
-    args, unknown = parser.parse_known_args()
+    args = parser.parse_args()
+    print("ARGS", args)
     return args
 
 
 def main():
     # Connect to websocket interfaces
-
+    
     with open('text-linebyline.txt', 'w') as f:
         f.write('')
-
+        
     with open('file2.txt', 'w') as f:
-        f.write('')
-
+         f.write('')
+    
     headers = {}
     userpass = ":".join(get_auth())
     headers["Authorization"] = "Basic " + base64.b64encode(
         userpass.encode()).decode()
     url = get_url()
+    
+    
 
     # If you really want to see everything going across the wire,
     # uncomment this. However realize the trace is going to also do
@@ -214,11 +216,20 @@ def main():
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_close=on_close)
-
+    
+    
+    
     ws.on_open = on_open
     ws.args = parse_args()
-
+    
     # This gives control over the WebSocketApp. This is a blocking
     # call, so it won't return until the ws.close() gets called (after
     # 6 seconds in the dedicated thread).
     ws.run_forever()
+
+if __name__ == '__main__':
+    main()
+    with open('text-linebyline.txt', 'r') as f:
+        lines = f.readLines()
+    return lines
+    
