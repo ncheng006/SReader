@@ -5,6 +5,8 @@ import json
 import threading
 import time
 
+import pandas as pd
+
 import pyaudio
 import websocket
 from websocket._abnf import ABNF
@@ -22,7 +24,7 @@ CHANNELS = 1
 RATE = 44100
 RECORD_SECONDS = 5
 
-met = []
+timestampsDF = pd.DataFrame(columns=["word", "start", "end"]) # THIS IS THE GLOBAL DATAFRAME OF TIMESTAMPS
 
 FINALS = []
 LAST = None
@@ -96,14 +98,22 @@ def on_message(self, msg):
     off for later.
     """
     global LAST
-    global met
+    global timestampsDF
     data = json.loads(msg)
     if "results" in data:
         if data["results"][0]["final"]:
             FINALS.append(data)
+            
+            # processing the text
             line = data["results"][0]['alternatives'][0]['transcript']
-            metadata = data["results"][0]['alternatives'][0]['timestamps']
-            met.append(metadata)
+            
+            # processing the timestamps information
+            ts = data["results"][0]['alternatives'][0]['timestamps']
+            newDF = pd.DataFrame(ts)
+            timestampsDF = pd.concat([timestampsDF, newDF], axis=0)
+            timestampsDF.to_csv("timestamps.csv")
+            print("we wrote to a new file")
+            
             LAST = None
         else:
             LAST = data
@@ -116,8 +126,8 @@ def on_message(self, msg):
             f.write(line)
 
         # this is to print out the entire js object bruh
-        with open('file2.txt', 'w') as f:
-            f.write(''.join(metadata))
+#         with open('file2.txt', 'w') as f:
+#             f.write(''.join(metadata))
 
 
 def on_error(self, error):
@@ -226,8 +236,6 @@ def main():
     # call, so it won't return until the ws.close() gets called (after
     # 6 seconds in the dedicated thread).
     ws.run_forever()
-    print("we passed the run_forever")
-    print("we have returned the metadata object")
-    return met
+    
     
     
