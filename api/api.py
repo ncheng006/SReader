@@ -1,6 +1,7 @@
 import time
 from flask import Flask
 import transcribe
+import readability_index
 
 app = Flask(__name__)
 
@@ -56,15 +57,58 @@ def get_data():
     return data1
 
 
-@app.route('/read')
-def read_text_from_audio():
-
-    with open('text-linebyline.txt', 'r') as f:
-        lines = f.read()
-    # assert type(lines) == str
-    return {"lines": lines}
-
-
 @app.route('/transcribe')
 def start_transcribing():
+    """
+        this starts transcribing for up to (60) seconds
+        note: 60 seconds is arbitrary
+    """
     transcribe.main()
+
+
+@app.route('/read')
+def read_text_from_audio():
+    return {"lines": extract()}
+
+
+@app.route('/read_obj_stuff')
+def read_obj_data():
+    text = extract('file2.txt')
+
+    # text is the list of json objects, work on extracting the timestamps
+    # daniel: start here
+
+
+@app.route('/dalechall')
+def get_dale_chall():
+    # this is dale chall readability score
+    text = extract()
+    score = readability_index.dale_chall_readability_score(text)
+    return score
+
+
+@app.route('/smogindex')
+def get_smog_index():
+    text = extract()
+    score = readability_index.smog_index(text)
+    return score
+
+
+@app.route('/gunningease')
+def get_gunning_ease():
+    text = extract()
+    score = readability_index.gunning_fog(text)
+    return score
+
+
+@app.route('/flesch')
+def get_flesch():
+    text = extract()
+    score = readability_index.flesch_reading_ease(text)
+    return score
+
+
+def extract(file_path="text-linebyline.txt"):
+    with open(file_path, 'r') as f:
+        lines = f.read()
+    return lines
