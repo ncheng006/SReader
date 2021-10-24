@@ -56,11 +56,15 @@ def get_data():
     return data1
 
 
-@app.route('/transcribe')
-def transcribe_audio():
-    transcribe.main()
+@app.route('/read')
+def read_text_from_audio():
 
     with open('text-linebyline.txt', 'r') as f:
         lines = f.read()
     # assert type(lines) == str
     return {"lines": lines}
+
+
+@app.route('/transcribe')
+def start_transcribing():
+    transcribe.main()

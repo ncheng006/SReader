@@ -181,7 +181,7 @@ def get_auth():
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Transcribe Watson text in real time')
-    parser.add_argument('-t', '--timeout', type=int, default=20)
+    parser.add_argument('-t', '--timeout', type=int, default=60)
     # parser.add_argument('-d', '--device')
     # parser.add_argument('-v', '--verbose', action='store_true')
     args, unknown = parser.parse_known_args()

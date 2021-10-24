@@ -10,10 +10,12 @@ function App() {
   const [data, setData] = useState(dummy);
 
   useEffect(() => {
+    fetch("/transcribe");
+
     const interval = setInterval(() => {
       console.log("This will run every second!");
 
-      fetch("/transcribe")
+      fetch("/read")
         .then((res) => res.json())
         .then((data) => {
           console.log(data.lines);
